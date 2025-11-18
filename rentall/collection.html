@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Grid with Labels</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+/* General reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #ff6b6b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn.secondary {
+            background-color: transparent;
+            border: 2px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .btn.secondary:hover {
+            background-color: #ff6b6b;
+            color: white;
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 2.5rem;
+            color: #333;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            margin-bottom: 60px;
+            color: #666;
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+/* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ff6b6b;
+        }
+
+        .logo span {
+            color: #333;
+        }
+
+        .nav-links {
+            display: flex;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ff6b6b;
+        }
+
+        .header-buttons {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-buttons .btn {
+            margin-left: 15px;
+        }
+
+/* Grid container setup */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  grid-template-rows: repeat(2, 1fr);    /* 2 rows */
+  gap: 14px;                             /* Space between grid items */
+  padding: 20px;
+}
+
+/* Grid item styling */
+.grid-item {
+  text-align: center;
+  background-color: #f4f4f4;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.grid-item label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.grid-item img {
+  max-width: 50%;
+  height: 350px;
+  border-radius: 5px;
+}
+
+/* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 80px 0 30px;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #ccc;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #ff6b6b;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background-color: #ff6b6b;
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+        <div class="container header-container">
+            <div class="logo">Style<span>Share</span></div>
+            <ul class="nav-links">
+                <li><a href="index.php">Home</a></li>
+                <li><a href="#">Collection</a></li>
+                <li><a href="aboutus.html">about us</a></li>
+                <li><a href="contactus.php">Contact</a></li>
+            </ul>
+            <div class="header-buttons">
+                <a href="#" class="btn secondary">Log In</a>
+                <a href="signup.php" class="btn">Sign Up</a>
+								<a href="admin.php" class="btn">Admin</a>
+
+            </div>
+        </div>
+    </header>
+	</br></br></br></br>
+	
+<div class="grid-container">
+    <div class="grid-item">
+        <a href="collectiondetail.php?category=lahenga">
+            <img src="https://img2.ogaanindia.com/pub/media/catalog/product/cache/3f6619daccdb194398d06464ab49fa6e/a/n/anog20220205.jpg" alt="Image 1">
+            <label for="image1">Lahenga</label>
+        </a>
+    </div>
+    
+    <div class="grid-item">
+        <a href="collectiondetail.php?category=gown">
+            <img src="https://clothsvilla.com/cdn/shop/products/ExclusiveDressDesignerNetGownForWomenFloralBrideGownIndianWeddingReceptionGownPakistaniSuitFloralAnarkaliGown_1_1024x1024@2x.jpg?v=1676616051" alt="Image 2">
+            <label for="image2">Gown</label>
+        </a>
+    </div>
+    
+    <div class="grid-item">
+        <a href="collectiondetail.php?category=Party%20Wear">
+            <img src="https://5.imimg.com/data5/SELLER/Default/2023/4/303601282/DE/BG/EO/58398864/blue-one-piece-women-dress-500x500.jpg" alt="Image 3">
+            <label for="image3">Party Wear</label>
+        </a>
+    </div>
+    
+    <div class="grid-item">
+        <a href="collectiondetail.php?category=Indo-western">
+            <img src="https://shreeman.in/cdn/shop/files/1J8A2958.jpg?v=1728646914" alt="Image 4">
+            <label for="image4">Indo-western</label>
+        </a>
+    </div>
+    
+    <div class="grid-item">
+        <a href="collectiondetail.php?category=Kurta">
+            <img src="https://www.nihalfashions.com/media/catalog/product/cache/caa15edf98145413286703527de7b8dd/c/o/cotton-digital-print-kurta-pajama-in-grey-nmk-6678.jpg" alt="Image 5">
+            <label for="image5">Kurta</label>
+        </a>
+    </div>
+    
+    <div class="grid-item">
+        <a href="collectiondetail.php?category=Suits">
+            <img src="https://shreeman.in/cdn/shop/files/1J8A2073.jpg?v=1685019534" alt="Image 6">
+            <label for="image6">Suits</label>
+        </a>
+    </div>
+</div>
+  
+   <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3>StyleShare</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">How It Works</a></li>
+                        <li><a href="#">Sustainability</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Help</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Shipping & Returns</a></li>
+                        <li><a href="#">Damage Protection</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">Rental Agreement</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Connect With Us</h3>
+                    <div class="social-links">
+                        <a href="#"><span>FB</span></a>
+                        <a href="#"><span>IG</span></a>
+                        <a href="#"><span>TW</span></a>
+                        <a href="#"><span>PT</span></a>
+                    </div>
+                    <p style="margin-top: 20px; color: #ccc;">Subscribe to our newsletter for exclusive offers and fashion tips.</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 StyleShare. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+  
+</body>
+</html>
