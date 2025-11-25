@@ -1,0 +1,313 @@
+<?php
+session_start(); // Start session to check login status
+$servername = "localhost";
+$username = "root";
+$password = "";
+$database = "rentalcloth";
+
+$conn = new mysqli($servername, $username, $password, $database);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$item_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Item Details</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #dfdfe8;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 100px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: flex;
+            padding: 17px;
+            gap: 30px;
+        }
+
+        .left, .right {
+            flex: 1;
+        }
+
+        .left img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .right h1 {
+            margin-top: 0;
+            font-size: 2em;
+            color: #222;
+        }
+
+        .right p {
+            font-size: 1.1em;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 25px;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background-color: #ff5252;
+        }
+
+        .btn.secondary {
+            background-color: transparent;
+            color: #ff6b6b;
+            border: 2px solid #ff6b6b;
+        }
+
+        .btn.secondary:hover {
+            background-color: #ff6b6b;
+            color: white;
+        }
+
+        .buy-form {
+            max-width: 600px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .buy-form h2 {
+            margin-top: 0;
+        }
+
+        .buy-form label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .buy-form input,
+        .buy-form textarea,
+        .buy-form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .buy-form button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .buy-form button:hover {
+            background-color: #ff6b6b;
+        }
+
+        @media (max-width: 668px) {
+            .container {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+    <script>
+        function toggleForm() {
+            document.getElementById("buyNowForm").style.display = "block";
+        }
+
+        function validateForm() {
+            const form = document.getElementById('orderForm');
+            const name = form.querySelector('#name').value.trim();
+            const address = form.querySelector('#address').value.trim();
+            const phone = form.querySelector('#phone').value.trim();
+            const rentalDate = form.querySelector('#rental_date').value;
+            const confirmSize = form.querySelector('#confirm_size').value;
+            const returnDate = form.querySelector('#return_date').value;
+
+            // Validate required fields
+            if (!name || !address || !phone || !rentalDate || !confirmSize || !returnDate) {
+                alert('Please fill out all required fields.');
+                return false;
+            }
+
+            // Validate phone number
+            if (!/^\d{10}$/.test(phone)) {
+                alert('Please enter a valid 10-digit phone number.');
+                return false;
+            }
+
+            // Validate rental date (not in the past)
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset time for comparison
+            const rentalDateObj = new Date(rentalDate);
+            if (rentalDateObj < today) {
+                alert('Rental date cannot be in the past.');
+                return false;
+            }
+
+            // Validate return date (must be after rental date)
+            const returnDateObj = new Date(returnDate);
+            if (returnDateObj <= rentalDateObj) {
+                alert('Return date must be after the rental date.');
+                return false;
+            }
+
+            return true;
+        }
+
+        function payNow(itemPrice) {
+            // Check if user is logged in
+            <?php if (!isset($_SESSION['user_id'])): ?>
+                alert('Please log in or sign up to place an order.');
+                window.location.href = 'login.php?redirect=item_details.php?id=<?php echo $item_id; ?>';
+                return;
+            <?php endif; ?>
+
+            if (!validateForm()) return;
+
+            const form = document.getElementById('orderForm');
+            const formData = new FormData(form);
+
+            const options = {
+                key: 'rzp_test_UpIEIXEWRj5It2',
+                amount: itemPrice,
+                currency: 'INR',
+                name: 'StyleShare',
+                description: 'Rental Payment',
+                handler: function (response) {
+                    formData.append('razorpay_payment_id', response.razorpay_payment_id);
+                    formData.append('user_id', '<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>');
+
+                    fetch('submit-order.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(res => res.text())
+                    .then(data => {
+                        alert('Order successful!');
+                        window.location.href = 'index.php';
+                    })
+                    .catch(err => {
+                        alert('Payment successful but order submission failed. Please contact support.');
+                        console.error('Order submission error:', err);
+                    });
+                },
+                theme: {
+                    color: '#ff6b6b'
+                },
+                modal: {
+                    ondismiss: function() {
+                        alert('Payment cancelled.');
+                    }
+                }
+            };
+
+            try {
+                const rzp = new Razorpay(options);
+                rzp.open();
+            } catch (error) {
+                alert('Error initiating payment. Please try again.');
+                console.error('Razorpay error:', error);
+            }
+        }
+    </script>
+</head>
+<body>
+
+<?php
+if ($item_id > 0) {
+    $sql = "SELECT * FROM clothes WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $item_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($row = $result->fetch_assoc()) {
+        $item_price = intval($row['price']) * 100;
+        echo "<div class='container'>";
+        echo "<div class='left'>";
+        echo "<img src='img/clothes/" . htmlspecialchars($row['photo']) . "' alt='" . htmlspecialchars($row['name']) . "'>";
+        echo "</div>";
+        echo "<div class='right'>";
+        echo "<h1>" . htmlspecialchars($row['name']) . "</h1>";
+        echo "<p><strong>Description:</strong><br>" . nl2br(htmlspecialchars($row['Description'])) . "</p>";
+        echo "<p><strong>Size:</strong> " . htmlspecialchars($row['size']) . "</p>";
+        echo "<p><strong>Price:</strong> ₹" . htmlspecialchars($row['price']) . "</p>";
+        echo "<a href='javascript:history.back()' class='btn secondary'>← Back</a>";
+        echo "<button class='btn' onclick='toggleForm()'>Buy Now</button>";
+        echo "</div>";
+        echo "</div>";
+
+        echo "<div class='buy-form' id='buyNowForm' style='display:none;'>";
+        echo "<h2>Enter Your Details</h2>";
+        echo "<form id='orderForm'>";
+        echo "<input type='hidden' name='item_id' value='" . $row['id'] . "'>";
+
+        echo "<label for='name'>Full Name</label>";
+        echo "<input type='text' id='name' name='name' required>";
+
+        echo "<label for='address'>Address</label>";
+        echo "<textarea id='address' name='address' required></textarea>";
+
+        echo "<label for='phone'>Contact Number</label>";
+        echo "<input type='text' id='phone' name='phone' required>";
+
+        echo "<label for='rental_date'>Rental Date</label>";
+        echo "<input type='date' id='rental_date' name='rental_date' required>";
+
+        echo "<label for='confirm_size'>Confirm Size</label>";
+        echo "<select id='confirm_size' name='confirm_size' required>";
+        echo "<option value=''>Select Size</option>";
+        echo "<option value='S'>S</option>";
+        echo "<option value='M'>M</option>";
+        echo "<option value='L'>L</option>";
+        echo "<option value='XL'>XL</option>";
+        echo "</select>";
+
+        echo "<label for='return_date'>Return Date</label>";
+        echo "<input type='date' id='return_date' name='return_date' required>";
+
+        echo "<button type='button' onclick='payNow($item_price)'>Pay & Order</button>";
+        echo "</form>";
+        echo "</div>";
+    } else {
+        echo "<p style='text-align: center;'>Item not found.</p>";
+    }
+
+    $stmt->close();
+} else {
+    echo "<p style='text-align: center;'>Invalid item.</p>";
+}
+$conn->close();
+?>
+
+</body>
+</html>

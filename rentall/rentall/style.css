@@ -1,0 +1,108 @@
+
+
+
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+/* Header */
+header {
+    background: #fff;
+    padding: 15px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.container {
+    width: 90%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+}
+
+
+
+.div1 .btn1 {
+   
+  background-color: red; /* Green background */
+  color: white; /* Text color */
+  font-size: 16px; /* Font size */
+  padding: 12px 24px; /* Padding to make the button bigger */
+  border: none; /* Remove the border */
+  border-radius: 5px; /* Rounded corners */
+ 
+}
+
+/* Hero Section */
+.hero {
+    background: url('fashionmodel.jpg') no-repeat center center/cover;
+    height: 650px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: black;
+}
+
+.hero-content {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 30px;
+    border-radius: 5px;
+}
+
+.hero h1 {
+    font-size: 45px;
+}
+
+.hero p {
+    font-size: 25px;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: black;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+
+
+/* How It Works */
+.how-it-works {
+    text-align: center;
+    padding: 50px 20px;
+    background: #f8f8f8;
+}
+
+.how-it-works h2 {
+    font-size: 28px;
+}
